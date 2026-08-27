@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101615" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Buildwise — Your PC, understood.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/phase-two.css" />
+    <link rel="stylesheet" href="./src/build-guide.css" />
+    <link rel="stylesheet" href="./src/questionnaire-ad.css" />
+    <link rel="stylesheet" href="./src/homepage-refinement.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header class="site-header"><a class="brand" href="#top"><span class="brand-mark">B</span><span>buildwise</span></a><nav><a href="#how-it-works">How it works</a><a href="#examples">Explore builds</a><button class="text-button" data-open-builder>Manual builder</button></nav><button class="header-cta" data-start>Find my build <span>↗</span></button></header>
+    <main id="top">
+      <section class="hero"><div class="hero-copy"><p class="eyebrow">THE INTENTIONAL PC PLATFORM</p><h1>Build the PC<br /><em>that gets you.</em></h1><p class="hero-text">Tell us how you play, create and work. We’ll turn your priorities into a considered PC — not a spreadsheet of parts.</p><div class="hero-actions"><button class="primary-button" data-start>Build my PC <span>→</span></button><button class="secondary-button" data-open-builder>Or choose every part</button></div><div class="trust-row"><span>◌ No jargon overload</span><span>◌ Built around you</span><span>◌ Compatibility minded</span></div></div><div class="hero-sculpture" aria-label="Abstract illustration of a computer build"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="case-visual"><div class="case-top"></div><div class="case-glass"><div class="fan fan-a"></div><div class="fan fan-b"></div><div class="gpu-line"></div><div class="board"></div></div><div class="case-side"></div></div><p class="sculpture-label">YOUR SPEC, <i>IN FOCUS</i></p></div></section>
+      <section class="intent-strip"><p>Not another part catalogue.</p><div><span>YOUR INTENT</span><b>→</b><span>A BETTER FIT</span></div><p>Start with what matters.</p></section>
+      <section id="how-it-works" class="process"><div class="section-heading"><p class="eyebrow">A CLEARER WAY TO BUILD</p><h2>Make the choice before<br />the components.</h2></div><div class="steps"><article><span>01</span><h3>Tell us your world</h3><p>Your budget, workload, visual taste and space. Plain language is welcome.</p></article><article><span>02</span><h3>We weigh the trade-offs</h3><p>Performance, aesthetics, acoustics and upgrade headroom in the balance you choose.</p></article><article><span>03</span><h3>Make it yours</h3><p>Get a few considered directions, then refine every decision in one calm builder.</p></article></div></section>
+      <section id="examples" class="build-preview"><div><p class="eyebrow">STARTING POINTS</p><h2>Some personalities,<br /><em>not prescriptions.</em></h2><button class="text-button" data-start>Find yours →</button></div><div class="preview-cards"><article class="preview-card moss"><span>1440P / QUIET</span><h3>The Deep Focus</h3><p>High-frame gaming with room to breathe.</p><div><b>£1,250</b><small>Illustrative build</small></div></article><article class="preview-card clay"><span>CREATIVE / WHITE</span><h3>The Studio Light</h3><p>Composed for timelines, renders and calm desks.</p><div><b>£1,850</b><small>Illustrative build</small></div></article></div></section>
+      <section class="build-guide" aria-labelledby="build-guide-title"><div class="build-guide-inner"><div class="build-guide-heading"><p class="eyebrow">BUILD GUIDE</p><h2 id="build-guide-title">Build your PC with confidence.</h2><p class="build-guide-intro">Three detailed video guides to help you assemble your PC, install every component and get the system running.</p></div><div id="build-guide-videos" class="build-guide-grid" aria-label="PC build video guides"></div></div></section>
+      <section class="promise"><p>Every recommendation is a starting conversation, not a black box.</p><div class="promise-pill">WHY THIS PART? <span>+</span></div></section>
+    </main>
+    <footer><a class="brand" href="#top"><span class="brand-mark">B</span><span>buildwise</span></a><p>PC decisions, made personal.</p><p>© 2026 Buildwise. Product prices are planning estimates.</p></footer>
+    <div id="app-modal" class="modal" aria-hidden="true"><div class="modal-backdrop" data-close></div><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="close" aria-label="Close" data-close>×</button><div id="modal-content"></div></section></div>
+    <script type="module" src="./src/app.js"></script>
+    <script type="module" src="./src/catalogue-copy.js"></script>
+    <script type="module" src="./src/build-guide.js"></script>
+    <script type="module" src="./src/questionnaire-ad.js"></script>
+    <script type="module" src="./src/hero-visual.js"></script>
+  </body>
+</html>
