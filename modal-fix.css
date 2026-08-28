@@ -1,8 +1,0 @@
-/* Modal layering: the header uses z-index:20, so this layer must sit above it. */
-.modal{z-index:30}
-.modal-backdrop{z-index:0}
-.modal-panel{z-index:1}
-.close{z-index:2;right:14px;top:10px;width:44px;height:44px;background:var(--paper);line-height:1;touch-action:manipulation}
-.close:focus-visible{outline:3px solid var(--lime);outline-offset:-3px}
-body.questionnaire-open{overflow:hidden}
-.budget-note{margin-top:10px;font:500 11px/1.45 var(--mono);color:#7a3d20}
