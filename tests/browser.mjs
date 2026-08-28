@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { createRequire } from 'node:module';
+import { budgetFit, cheaperAlternatives, compatibility, makeBuild, total } from '../src/services/build.js';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const root = process.cwd();
@@ -26,6 +27,56 @@ async function pageFor(viewport = { width: 1280, height: 800 }) {
   await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
   return { context, page };
 }
+
+async function openResults(page, budget) {
+  await page.getByRole('button', { name: /Build my PC/ }).click();
+  await page.getByRole('button', { name: `£${budget.toLocaleString('en-GB')}`, exact: true }).click();
+  for (let step = 0; step < 5; step++) await page.getByRole('button', { name: /Continue/ }).click();
+  await page.getByRole('button', { name: /Generate my build/ }).click();
+}
+
+await test('budget-fit ratings cover under, close, slightly over and significantly over budgets', async () => {
+  assert.equal(budgetFit(1000, 850).rating, 'Excellent fit');
+  assert.equal(budgetFit(1000, 700).rating, 'Good fit');
+  assert.equal(budgetFit(1000, 1050).rating, 'Slightly over budget');
+  assert.equal(budgetFit(1000, 1200).rating, 'Over budget');
+});
+
+await test('over-budget builds show compatible, lower-cost alternatives without auto-replacing parts', async () => {
+  const preferences = { budget:500, use:'Gaming', balance:50, colour:'white', rgb:'RGB lighting', resolution:'1440p', software:'Competitive games', storage:2048, noise:'Quiet preferred', size:'Mid-size', connectivity:'Wi-Fi + Bluetooth', upgrade:'Important' };
+  const ids = makeBuild(preferences, 'balanced');
+  const alternatives = cheaperAlternatives(ids);
+  assert.ok(total(ids) > preferences.budget);
+  assert.ok(alternatives.length > 0);
+  for (const option of alternatives) {
+    const replacement = ids.map(id => id === option.current.id ? option.best.id : id);
+    assert.ok(option.best.price.amount < option.current.price.amount);
+    assert.equal(compatibility(replacement).length, 0);
+  }
+  assert.deepEqual(ids.filter(Boolean).sort(), makeBuild(preferences, 'balanced').filter(Boolean).sort());
+});
+
+await test('results show requested budget, total, rating and savings guidance when over budget', async () => {
+  const { context, page } = await pageFor();
+  await openResults(page, 500);
+  assert.equal(await page.locator('.budget-fit').count(), 4);
+  assert.match(await page.locator('.budget-fit').first().innerText(), /Budget fit: Over budget/);
+  assert.match(await page.locator('.budget-fit').first().innerText(), /Budget £500/);
+  assert.ok(await page.locator('.cost-options li').count() > 0);
+  await context.close();
+});
+
+await test('results keep budget guidance readable on desktop and mobile', async () => {
+  for (const viewport of [{ width:1440, height:900 }, { width:375, height:812 }]) {
+    const { context, page } = await pageFor(viewport);
+    await openResults(page, 500);
+    const fit = page.locator('.budget-fit').first();
+    const box = await fit.boundingBox();
+    assert.ok(box && box.x >= 0 && box.x + box.width <= viewport.width);
+    assert.ok(await fit.isVisible());
+    await context.close();
+  }
+});
 
 await test('questionnaire opens, navigates, returns, completes and closes cleanly', async () => {
   const { context, page } = await pageFor();
