@@ -1,6 +1,8 @@
 import { products, buildImages } from '../data/catalogue.js';
 export const byId=id=>products.find(p=>p.id===id);
 export const total=ids=>ids.filter(Boolean).reduce((n,id)=>n+(byId(id)?.price.amount||0),0);
+export function budgetFit(budget, estimated){const difference=estimated-budget,ratio=Math.abs(difference)/Math.max(budget,1);if(difference>0)return{rating:ratio<=.1?'Slightly over budget':'Over budget',difference,kind:'over'};if(ratio<=.15)return{rating:'Excellent fit',difference,kind:'under'};return{rating:'Good fit',difference,kind:'under'};}
+export function cheaperAlternatives(ids){return ids.filter(Boolean).map(id=>{const current=byId(id),minimumTier=['cpu','gpu'].includes(current.category)?(current.specs.tier||0)*.72:0;const candidates=products.filter(part=>part.category===current.category&&part.price.amount<current.price.amount&&(part.specs.tier||minimumTier)>=minimumTier).map(part=>({part,next:ids.map(value=>value===id?part.id:value)})).filter(({next})=>compatibility(next).length===0).sort((a,b)=>b.part.price.amount-a.part.price.amount);const best=candidates[0];return best?{category:current.category,current,best:best.part,saving:current.price.amount-best.part.price.amount}:null}).filter(Boolean).filter(option=>option.saving>=10).sort((a,b)=>b.saving-a.saving).slice(0,3);}
 export const power=ids=>ids.filter(Boolean).reduce((n,id)=>n+(['cpu','gpu','fans'].includes(byId(id)?.category)?(byId(id).specs.power||8):0),55);
 export const buildImageFor=ids=>buildImages[ids.buildStyle]||buildImages.balanced;
 const of=(category,test=()=>true)=>products.filter(p=>p.category===category&&test(p));
