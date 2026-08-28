@@ -4,6 +4,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { createRequire } from 'node:module';
 import { budgetFit, cheaperAlternatives, compatibility, makeBuild, total } from '../src/services/build.js';
+import { readSharedBuild } from '../src/services/saved-builds.js';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const root = process.cwd();
@@ -74,6 +75,71 @@ await test('results keep budget guidance readable on desktop and mobile', async 
     const box = await fit.boundingBox();
     assert.ok(box && box.x >= 0 && box.x + box.width <= viewport.width);
     assert.ok(await fit.isVisible());
+    await context.close();
+  }
+});
+
+await test('generated builds save, reopen, delete and persist across refresh', async () => {
+  const { context, page } = await pageFor();
+  await openResults(page, 1000);
+  await page.getByRole('button', { name:'Save build', exact:true }).first().click();
+  assert.match(await page.locator('.save-status').innerText(), /Saved/);
+  await page.getByRole('button', { name:'Close questionnaire' }).click();
+  await page.getByRole('button', { name:'Saved builds', exact:true }).click();
+  assert.equal(await page.locator('.saved-build').count(), 1);
+  await page.reload({ waitUntil:'networkidle' });
+  await page.getByRole('button', { name:'Saved builds', exact:true }).click();
+  assert.equal(await page.locator('.saved-build').count(), 1);
+  await page.getByRole('button', { name:'Open', exact:true }).click();
+  assert.equal(await page.locator('.build-item').count(), 9);
+  await page.getByRole('button', { name:'Close questionnaire' }).click();
+  await page.getByRole('button', { name:'Saved builds', exact:true }).click();
+  await page.getByRole('button', { name:'Delete', exact:true }).click();
+  assert.equal(await page.locator('.saved-build').count(), 0);
+  await context.close();
+});
+
+await test('manual builder saves a named build', async () => {
+  const { context, page } = await pageFor();
+  await page.getByRole('button', { name:'Manual builder', exact:true }).click();
+  await page.locator('#build-name').fill('Quiet desk build');
+  await page.getByRole('button', { name:'Save build', exact:true }).click();
+  assert.match(await page.locator('.save-status').innerText(), /Quiet desk build/);
+  await context.close();
+});
+
+await test('share links restore valid builds and safely reject invalid or missing parts', async () => {
+  const { context, page } = await pageFor();
+  await page.getByRole('button', { name:'Manual builder', exact:true }).click();
+  await page.getByRole('button', { name:'Share build', exact:true }).click();
+  const url = await page.getByLabel('Share build link').inputValue();
+  assert.ok(url?.includes('build='));
+  const shared = await context.newPage();
+  await shared.goto(url, { waitUntil:'networkidle' });
+  assert.equal(await shared.locator('.build-item').count(), 9);
+  await shared.close();
+  const invalid = await context.newPage();
+  await invalid.goto('http://127.0.0.1:4173/?build=%3Cscript%3Ealert(1)%3C/script%3E', { waitUntil:'networkidle' });
+  assert.match(await invalid.locator('#modal-content').innerText(), /couldn’t open/i);
+  await invalid.close();
+  const missing = await context.newPage();
+  await missing.goto('http://127.0.0.1:4173/?build=cpu-a,cooler-a,motherboard-a,ram-a,gpu-a,storage-a,psu-a,case-a,does-not-exist', { waitUntil:'networkidle' });
+  assert.match(await missing.locator('#modal-content').innerText(), /no longer in the catalogue/i);
+  await missing.close();
+  await context.close();
+});
+
+await test('shared build parser rejects malformed and unknown input', async () => {
+  assert.equal(readSharedBuild('https://example.test/?build=<script>').valid, false);
+  assert.equal(readSharedBuild('https://example.test/?build=does-not-exist').valid, false);
+});
+
+await test('saved and share controls fit on desktop and mobile', async () => {
+  for (const viewport of [{width:1440,height:900},{width:375,height:812}]) {
+    const { context, page } = await pageFor(viewport);
+    await page.getByRole('button', { name:viewport.width <= 700 ? 'Or choose every part' : 'Manual builder', exact:true }).click();
+    const box = await page.getByRole('button', { name:'Share build', exact:true }).boundingBox();
+    assert.ok(box && box.x >= 0 && box.x + box.width <= viewport.width);
     await context.close();
   }
 });
