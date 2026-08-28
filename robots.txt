@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://buildwise7.github.io/buildwise/sitemap.xml
