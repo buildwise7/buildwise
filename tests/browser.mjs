@@ -134,6 +134,20 @@ await test('shared build parser rejects malformed and unknown input', async () =
   assert.equal(readSharedBuild('https://example.test/?build=does-not-exist').valid, false);
 });
 
+await test('pre-built page loads its safe catalogue framework and matcher flow', async () => {
+  const { context, page } = await pageFor();
+  await page.goto('http://127.0.0.1:4173/prebuilts.html', { waitUntil:'networkidle' });
+  assert.equal(await page.locator('.prebuilt-slot').count(), 6);
+  await page.getByRole('button', { name:/Find the build that suits you/ }).click();
+  assert.match(await page.locator('.prebuilt-progress').innerText(), /01\/03/);
+  await page.getByRole('button', { name:'Next →', exact:true }).click();
+  assert.match(await page.locator('.prebuilt-progress').innerText(), /02\/03/);
+  await page.getByRole('button', { name:'Back', exact:true }).click();
+  await page.getByRole('button', { name:'Close pre-built questionnaire' }).click();
+  assert.equal(await page.locator('#prebuilt-modal').getAttribute('aria-hidden'), 'true');
+  await context.close();
+});
+
 await test('saved and share controls fit on desktop and mobile', async () => {
   for (const viewport of [{width:1440,height:900},{width:375,height:812}]) {
     const { context, page } = await pageFor(viewport);
