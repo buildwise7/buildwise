@@ -147,6 +147,34 @@ function save(item){
   }
 }
 
+function componentView(item){
+  const specifications=[
+    ['CPU / Processor',item.cpu],
+    ['GPU / Graphics',item.gpu],
+    ['RAM / Memory',item.ram],
+    ['Storage',item.storage]
+  ].filter(([,value])=>value);
+
+  open(`<div class="prebuilt-flow-head prebuilt-components-head">
+    <p class="prebuilt-progress">PRE-BUILT COMPONENTS</p>
+    <h2 id="prebuilt-modal-title">What’s inside<br><em>this PC.</em></h2>
+    <p>${esc(item.name)} is a complete pre-built system. These are the specifications currently listed in the BuildWise catalogue; they are for reference only.</p>
+  </div>
+  <section class="prebuilt-components" aria-label="Known components for ${esc(item.name)}">
+    <div class="prebuilt-components-summary">
+      <span class="tag">${esc(item.brand)} · ${esc(item.performanceTier)} PERFORMANCE</span>
+      <b>${money(item.price)}</b>
+    </div>
+    ${specifications.map(([label,value])=>`<div class="prebuilt-component-row"><span>${esc(label)}</span><b>${esc(value)}</b></div>`).join('')}
+  </section>
+  <div class="flow-footer prebuilt-components-footer">
+    <button class="secondary-button" id="back-to-prebuilt-results">Back to matches</button>
+    <a class="primary-button" href="${esc(item.productUrl)}" target="_blank" rel="noopener noreferrer">View details / retailer ↗</a>
+  </div>`);
+
+  content.querySelector('#back-to-prebuilt-results').onclick=results;
+}
+
 function results(){
   const ranked=rankPrebuilts(prebuiltCatalogue,state);
 
@@ -158,12 +186,15 @@ function results(){
   <div class="result-list">
     ${ranked.map(({item},index)=>`<article class="prebuilt-result">
       ${renderImage(item)}
-      <span class="tag">#${index+1} BEST MATCH</span>
-      <h3>${esc(item.name)}</h3>
-      <p class="result-price">${money(item.price)} · ${esc(item.brand)}</p>
-      <p>${esc(item.cpu)} · ${esc(item.gpu)}<br>${esc(item.ram)} · ${esc(item.storage)}</p>
-      <p class="why"><b>Why this match:</b> ${esc(item.useCases.includes(state.use)?`Matches your ${state.use.toLowerCase()} focus`:'A considered option for your chosen budget')} with ${esc(item.performanceTier.toLowerCase())}-tier hardware.</p>
-      <div class="result-actions">
+      <div class="prebuilt-result-copy">
+        <span class="tag">#${index+1} BEST MATCH · ${esc(item.brand)}</span>
+        <h3>${esc(item.name)}</h3>
+        <p class="why"><b>Why this match:</b> ${esc(item.useCases.includes(state.use)?`Matches your ${state.use.toLowerCase()} focus`:'A considered option for your chosen budget')} with ${esc(item.performanceTier.toLowerCase())}-tier hardware.</p>
+      </div>
+      <div class="prebuilt-result-actions">
+        <b class="result-price">${money(item.price)}</b>
+        <span>Estimated price</span>
+        <button class="secondary-button" data-components="${esc(item.id)}">View components</button>
         <a class="secondary-button" href="${esc(item.productUrl)}" target="_blank" rel="noopener noreferrer">View details / retailer ↗</a>
         <button class="primary-button" data-save="${esc(item.id)}">Save build</button>
       </div>
@@ -179,5 +210,10 @@ function results(){
     }else{
       button.textContent='Could not save';
     }
+  });
+
+  content.querySelectorAll('[data-components]').forEach(button=>button.onclick=()=>{
+    const item=prebuiltCatalogue.find(candidate=>candidate.id===button.dataset.components);
+    if(item)componentView(item);
   });
 }
