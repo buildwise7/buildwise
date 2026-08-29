@@ -189,11 +189,18 @@ await test('saved builds page unifies editable custom and view-only pre-built sa
   assert.match(await page.locator('.saved-card-custom').innerText(), /CPU/);
   const editHref = await page.getByRole('link', { name:'View / edit build', exact:true }).getAttribute('href');
   assert.match(editHref, /savedBuild=/);
+  assert.match(editHref, /returnTo=saved-builds/);
   await page.goto(new URL(editHref, 'http://127.0.0.1:4173/').toString(), { waitUntil:'networkidle' });
   await page.getByRole('button', { name:'Replace', exact:true }).first().click();
   await page.getByRole('button', { name:'Add to build', exact:true }).last().click();
   await page.getByRole('button', { name:'Save build', exact:true }).click();
-  await page.goto('http://127.0.0.1:4173/saved-builds.html', { waitUntil:'networkidle' });
+  await page.getByRole('button', { name:'Close questionnaire', exact:true }).click();
+  await page.waitForURL('**/saved-builds.html');
+  assert.equal(await page.locator('.saved-card-custom').count(), 1);
+  const escapeHref = await page.getByRole('link', { name:'View / edit build', exact:true }).getAttribute('href');
+  await page.goto(new URL(escapeHref, 'http://127.0.0.1:4173/').toString(), { waitUntil:'networkidle' });
+  await page.getByRole('button', { name:'Close questionnaire', exact:true }).press('Escape');
+  await page.waitForURL('**/saved-builds.html');
   assert.equal(await page.locator('.saved-card-custom').count(), 1);
   await openPrebuiltResults(page);
   await page.getByRole('button', { name:'Save build', exact:true }).first().click();
@@ -238,6 +245,7 @@ await test('questionnaire opens, navigates, returns, completes and closes cleanl
   await page.getByRole('button', { name: 'Close questionnaire' }).press('Escape');
   assert.equal(await page.locator('#app-modal').getAttribute('aria-hidden'), 'true');
   assert.equal(await page.evaluate(() => document.body.classList.contains('questionnaire-open')), false);
+  assert.equal(new URL(page.url()).pathname, '/');
   await context.close();
 });
 
