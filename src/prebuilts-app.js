@@ -7,15 +7,18 @@ let step=0,state={budget:budgetOptions[2],use:useOptions[0],performance:'Balance
 const money=value=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(value);
 const esc=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
-const renderImage=item=>{
-  const file=item.image||({
+const imageFileFor=item=>item.image||({
     Entry:'illustrative-everyday.png',
     Everyday:'illustrative-everyday.png',
     Mid:'illustrative-gaming.png',
     High:'illustrative-enthusiast.png'
   }[item.performanceTier]||'illustrative-everyday.png');
 
-  const alt=item.imageAlt||`Illustrative render of the recommended ${item.brand} desktop PC`;
+const imageAltFor=item=>item.imageAlt||`Illustrative render of the recommended ${item.brand} desktop PC`;
+
+const renderImage=item=>{
+  const file=imageFileFor(item);
+  const alt=imageAltFor(item);
 
   return `<figure class="result-image">
     <img
@@ -31,7 +34,10 @@ const renderImage=item=>{
 };
 
 const card=item=>`<article class="prebuilt-card">
-  <div class="prebuilt-visual" aria-hidden="true"><span>${esc(item.brand)}</span></div>
+  <figure class="prebuilt-visual">
+    <img src="./public/images/prebuilts/${esc(imageFileFor(item))}" alt="${esc(imageAltFor(item))}" width="716" height="614" loading="lazy" onerror="this.onerror=null;this.src='./public/images/prebuilts/illustrative-everyday.png'">
+    <figcaption>Illustrative render</figcaption>
+  </figure>
   <p class="slot-status">${esc(item.performanceTier)} PERFORMANCE · VERIFIED LISTING</p>
   <h3>${esc(item.name)}</h3>
   <p class="prebuilt-specs"><b>CPU</b> ${esc(item.cpu)}<br><b>GPU</b> ${esc(item.gpu)}<br><b>Memory</b> ${esc(item.ram)} · <b>Storage</b> ${esc(item.storage)}</p>
