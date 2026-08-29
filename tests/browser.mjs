@@ -36,6 +36,14 @@ async function openResults(page, budget) {
   await page.getByRole('button', { name: /Generate my build/ }).click();
 }
 
+async function openPrebuiltResults(page) {
+  await page.goto('http://127.0.0.1:4173/prebuilts.html', { waitUntil:'networkidle' });
+  await page.getByRole('button', { name:/Find the build that suits you/ }).click();
+  await page.getByRole('button', { name:'Next →', exact:true }).click();
+  await page.getByRole('button', { name:'Next →', exact:true }).click();
+  await page.getByRole('button', { name:'Show matches →', exact:true }).click();
+}
+
 await test('budget-fit ratings cover under, close, slightly over and significantly over budgets', async () => {
   assert.equal(budgetFit(1000, 850).rating, 'Excellent fit');
   assert.equal(budgetFit(1000, 700).rating, 'Good fit');
@@ -145,6 +153,34 @@ await test('pre-built page loads its safe catalogue framework and matcher flow',
   await page.getByRole('button', { name:'Back', exact:true }).click();
   await page.getByRole('button', { name:'Close pre-built questionnaire' }).click();
   assert.equal(await page.locator('#prebuilt-modal').getAttribute('aria-hidden'), 'true');
+  await context.close();
+});
+
+await test('pre-built matches use compact cards and an informational component view', async () => {
+  const { context, page } = await pageFor();
+  await openPrebuiltResults(page);
+  assert.equal(await page.locator('.prebuilt-result').count(), 4);
+  const first = page.locator('.prebuilt-result').first();
+  const image = await first.locator('.result-image').boundingBox();
+  assert.ok(image && image.width <= 148);
+  assert.equal(await first.getByRole('button', { name:'View components', exact:true }).count(), 1);
+  assert.equal(await first.getByRole('link', { name:/View details \/ retailer/ }).count(), 1);
+  assert.equal(await first.locator('.prebuilt-result-copy').innerText().then(text=>/CPU|GPU|RAM|Storage/.test(text)), false);
+  await first.getByRole('button', { name:'View components', exact:true }).click();
+  assert.equal(await page.locator('.prebuilt-component-row').count(), 4);
+  assert.equal(await page.getByRole('button', { name:/Replace|Add to build/ }).count(), 0);
+  await page.getByRole('button', { name:'Back to matches', exact:true }).click();
+  assert.equal(await page.locator('.prebuilt-result').count(), 4);
+  await context.close();
+});
+
+await test('compact pre-built matches remain usable on mobile', async () => {
+  const { context, page } = await pageFor({width:375,height:812});
+  await openPrebuiltResults(page);
+  const first = page.locator('.prebuilt-result').first();
+  const actions = await first.locator('.prebuilt-result-actions').boundingBox();
+  assert.ok(actions && actions.x >= 0 && actions.x + actions.width <= 375);
+  assert.ok(await first.getByRole('button', { name:'Save build', exact:true }).isVisible());
   await context.close();
 });
 
