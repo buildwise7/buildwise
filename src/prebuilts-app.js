@@ -1,5 +1,6 @@
 import {prebuiltCatalogue,budgetOptions,useOptions} from './data/prebuilts.js';
 import {rankPrebuilts} from './services/prebuilt-matching.js';
+import {savePrebuilt} from './services/saved-store.js';
 
 const modal=document.querySelector('#prebuilt-modal'),content=document.querySelector('#prebuilt-content');
 let step=0,state={budget:budgetOptions[2],use:useOptions[0],performance:'Balanced'};
@@ -130,27 +131,7 @@ function render(){
 }
 
 function save(item){
-  try{
-    const key='buildwise-saved-prebuilts-v1';
-    const saved=JSON.parse(localStorage.getItem(key)||'[]');
-
-    localStorage.setItem(
-      key,
-      JSON.stringify([
-        {
-          kind:'prebuilt',
-          id:item.id,
-          name:item.name,
-          savedAt:new Date().toISOString()
-        },
-        ...saved.filter(entry=>entry.id!==item.id)
-      ].slice(0,30))
-    );
-
-    return true;
-  }catch{
-    return false;
-  }
+  return savePrebuilt(item);
 }
 
 function componentView(item){
