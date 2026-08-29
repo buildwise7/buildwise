@@ -145,7 +145,13 @@ await test('shared build parser rejects malformed and unknown input', async () =
 await test('pre-built page loads its safe catalogue framework and matcher flow', async () => {
   const { context, page } = await pageFor();
   await page.goto('http://127.0.0.1:4173/prebuilts.html', { waitUntil:'networkidle' });
-  assert.equal(await page.locator('.prebuilt-slot').count(), 6);
+  assert.equal(await page.locator('.prebuilt-card').count(), 6);
+  assert.equal(await page.locator('.prebuilt-card .prebuilt-visual img').count(), 6);
+  assert.equal(await page.locator('.prebuilt-card .prebuilt-visual figcaption').count(), 6);
+  for (const image of await page.locator('.prebuilt-card .prebuilt-visual img').all()) {
+    assert.match(await image.getAttribute('src'), /illustrative-(everyday|gaming|enthusiast)\.png$/);
+    assert.ok(await image.getAttribute('alt'));
+  }
   await page.getByRole('button', { name:/Find the build that suits you/ }).click();
   assert.match(await page.locator('.prebuilt-progress').innerText(), /01\/03/);
   await page.getByRole('button', { name:'Next →', exact:true }).click();
