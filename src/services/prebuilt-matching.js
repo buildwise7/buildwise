@@ -1,0 +1,3 @@
+const normalise = value => String(value || '').toLowerCase();
+export function validPrebuilt(item) { return !!item && typeof item.id === 'string' && typeof item.name === 'string' && typeof item.brand === 'string' && Array.isArray(item.useCases) && typeof item.budgetTier === 'string'; }
+export function rankPrebuilts(catalogue, preferences) { return catalogue.filter(validPrebuilt).map(item => { let score = 0; if (item.budgetTier === preferences.budget) score += 50; if (item.useCases.some(use => normalise(use) === normalise(preferences.use))) score += 45; if (preferences.performance && item.performanceTier) score += 10; return { item, score }; }).sort((a,b) => b.score - a.score || a.item.name.localeCompare(b.item.name)).slice(0,4); }
