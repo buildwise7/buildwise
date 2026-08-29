@@ -14,7 +14,7 @@ function customCard(record){
     <div class="saved-card-head"><span class="tag">CUSTOM BUILD</span><time datetime="${new Date(record.updatedAt).toISOString()}">Updated ${esc(date(record.updatedAt))}</time></div>
     <h2>${esc(record.name)}</h2><p class="saved-total">${money(total(record.ids))} <span>Estimated planning total</span></p>
     <div class="saved-parts">${parts.map(part=>`<div><span>${esc(part.category)}</span><a href="${esc(part.retailers[0]?.url||'#')}" target="_blank" rel="noopener noreferrer">${esc(part.name)}</a><b>${money(part.price.amount)}</b></div>`).join('')}</div>
-    <div class="saved-actions"><a class="primary-button" href="./index.html?savedBuild=${encodeURIComponent(record.id)}">View / edit build</a><button class="text-button" data-remove="${esc(record.id)}">Remove saved build</button></div>
+    <div class="saved-actions"><a class="primary-button" href="./index.html?savedBuild=${encodeURIComponent(record.id)}&returnTo=saved-builds">View / edit build</a><button class="text-button" data-remove="${esc(record.id)}">Remove saved build</button></div>
   </article>`;
 }
 
