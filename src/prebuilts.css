@@ -11,3 +11,7 @@
 
 /* Featured catalogue cards use small illustrative PC renders in the original visual area. */
 .prebuilt-card .prebuilt-visual{height:92px;margin:0;position:relative;display:block;overflow:hidden;background:#d8ded0}.prebuilt-card .prebuilt-visual img{display:block;width:100%;height:92px;object-fit:cover}.prebuilt-card .prebuilt-visual figcaption{position:absolute;right:6px;bottom:5px;padding:3px 5px;background:rgba(244,241,234,.9);color:var(--ink);font:500 8px 'DM Mono';letter-spacing:.3px}
+
+/* Dedicated Pre-builts header title. */
+.site-header nav>a[aria-current="page"]{font-size:23px;font-weight:800;letter-spacing:-.7px;line-height:1}
+@media(max-width:700px){.site-header nav>a[aria-current="page"]{font-size:18px;letter-spacing:-.4px}}
