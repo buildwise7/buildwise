@@ -336,10 +336,12 @@ await test('manual builder replaces a component and remains usable', async () =>
 
 await test('navigation and terms controls work', async () => {
   const { context, page } = await pageFor();
-  await page.getByRole('link', { name: 'How it works', exact: true }).click();
-  assert.equal(new URL(page.url()).hash, '#how-it-works');
-  await page.getByRole('link', { name: 'Explore builds', exact: true }).click();
-  assert.equal(new URL(page.url()).hash, '#examples');
+  await page.getByRole('button', { name:'Open navigation', exact:true }).click();
+  assert.equal(await page.getByRole('button', { name:'Close navigation', exact:true }).getAttribute('aria-expanded'), 'true');
+  for (const [name,path] of [['Saved builds','saved-builds.html'],['Pre-builts','prebuilts.html'],['Choose Every Part','manual-builder.html'],['YouTube videos','youtube.html']]) {
+    const link=page.getByRole('link', { name, exact:true });
+    assert.equal(await link.getAttribute('href'), `./${path}`);
+  }
   await page.getByRole('button', { name: 'Terms & Conditions', exact: true }).click();
   await page.getByRole('button', { name: 'More Info', exact: true }).click();
   assert.equal(await page.locator('.terms-details').isVisible(), true);
