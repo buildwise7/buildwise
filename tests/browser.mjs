@@ -181,6 +181,8 @@ await test('all custom recommendations expose a working performance view', async
   const { context, page } = await pageFor();
   await openResults(page, 1250);
   assert.equal(await page.getByRole('button', { name:'Performance', exact:true }).count(), 4);
+  assert.equal(await page.locator('.build-actions .secondary-button').count(), 12);
+  assert.equal(await page.locator('.build-actions .text-button').count(), 0);
   await page.getByRole('button', { name:'Performance', exact:true }).nth(1).click();
   assert.equal(await page.locator('.performance-game').count(), 4);
   assert.match(await page.locator('.performance-view').innerText(), /Minecraft \(Java, no shaders\)/);
