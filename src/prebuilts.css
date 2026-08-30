@@ -15,3 +15,5 @@
 /* Dedicated Pre-builts header title. */
 .site-header nav>a[aria-current="page"]{font-size:23px;font-weight:800;letter-spacing:-.7px;line-height:1}
 @media(max-width:700px){.site-header nav>a[aria-current="page"]{font-size:18px;letter-spacing:-.4px}}
+
+.prebuilt-ad{max-width:1280px;margin:0 auto;padding:0 36px 86px}.prebuilt-ad a{display:block;max-width:1086px;margin:auto}.prebuilt-ad img{display:block;width:100%;height:auto;border:0}@media(max-width:600px){.prebuilt-ad{padding:0 20px 56px}}
