@@ -4,6 +4,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { createRequire } from 'node:module';
 import { budgetFit, cheaperAlternatives, compatibility, makeBuild, total } from '../src/services/build.js';
+import { estimateGamingPerformance } from '../src/services/gaming-performance.js';
 import { readSharedBuild } from '../src/services/saved-builds.js';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
@@ -159,6 +160,39 @@ await test('pre-built page loads its safe catalogue framework and matcher flow',
   await page.getByRole('button', { name:'Back', exact:true }).click();
   await page.getByRole('button', { name:'Close pre-built questionnaire' }).click();
   assert.equal(await page.locator('#prebuilt-modal').getAttribute('aria-hidden'), 'true');
+  await context.close();
+});
+
+await test('performance model returns four game ranges and scales down across resolutions', async () => {
+  const preferences = { budget:1250, use:'Gaming', balance:50, colour:'white', rgb:'RGB lighting', resolution:'1440p', software:'Competitive games', storage:2048, noise:'Quiet preferred', size:'Mid-size', connectivity:'Wi-Fi + Bluetooth', upgrade:'Important' };
+  const ids = makeBuild(preferences, 'performance');
+  const at1080 = estimateGamingPerformance(ids, '1080p');
+  const at1440 = estimateGamingPerformance(ids, '1440p');
+  const at4k = estimateGamingPerformance(ids, '4K');
+  assert.deepEqual(at1440.games.map(game => game.name), ['Fortnite','Counter-Strike 2','Minecraft (Java, no shaders)','Valorant']);
+  for (let index = 0; index < at1440.games.length; index++) {
+    assert.ok(at1080.games[index].max > at1440.games[index].max);
+    assert.ok(at1440.games[index].max > at4k.games[index].max);
+    assert.ok(at1440.games[index].min < at1440.games[index].max);
+  }
+});
+
+await test('all custom recommendations expose a working performance view', async () => {
+  const { context, page } = await pageFor();
+  await openResults(page, 1250);
+  assert.equal(await page.getByRole('button', { name:'Performance', exact:true }).count(), 4);
+  await page.getByRole('button', { name:'Performance', exact:true }).nth(1).click();
+  assert.equal(await page.locator('.performance-game').count(), 4);
+  assert.match(await page.locator('.performance-view').innerText(), /Minecraft \(Java, no shaders\)/);
+  const before = await page.locator('.performance-games').innerText();
+  await page.getByLabel('Performance resolution').selectOption('4K');
+  const after = await page.locator('.performance-games').innerText();
+  assert.notEqual(after, before);
+  await page.getByRole('button', { name:'Close questionnaire' }).click();
+  assert.equal(await page.locator('.result-card').count(), 4);
+  await page.getByRole('button', { name:'Performance', exact:true }).first().click();
+  await page.getByRole('button', { name:'Close questionnaire' }).press('Escape');
+  assert.equal(await page.locator('.result-card').count(), 4);
   await context.close();
 });
 
