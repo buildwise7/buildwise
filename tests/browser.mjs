@@ -181,6 +181,21 @@ await test('Choose Every Part is a direct page with the shared editable builder 
   await context.close();
 });
 
+await test('standalone builder performance return restores the current build', async () => {
+  const { context, page } = await pageFor();
+  await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+  await page.locator('.build-item').first().waitFor({state:'visible'});
+  const partBefore = await page.locator('.build-item .part-link').nth(4).innerText();
+  assert.equal(await page.locator('#performance-return').count(), 0);
+  await page.getByRole('button', { name:'Performance', exact:true }).click();
+  await page.locator('#performance-return').waitFor({state:'visible'});
+  await page.getByLabel('Performance resolution').selectOption('4K');
+  await page.getByRole('button', { name:/Return/ }).click();
+  assert.equal(await page.locator('.build-item').count(), 9);
+  assert.equal(await page.locator('.build-item .part-link').nth(4).innerText(), partBefore);
+  await context.close();
+});
+
 await test('performance model returns four game ranges and scales down across resolutions', async () => {
   const preferences = { budget:1250, use:'Gaming', balance:50, colour:'white', rgb:'RGB lighting', resolution:'1440p', software:'Competitive games', storage:2048, noise:'Quiet preferred', size:'Mid-size', connectivity:'Wi-Fi + Bluetooth', upgrade:'Important' };
   const ids = makeBuild(preferences, 'performance');
