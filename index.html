@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="./src/questionnaire-ad.css" />
     <link rel="stylesheet" href="./src/homepage-refinement.css?v=saved-preview-1" />
     <link rel="stylesheet" href="./src/home-elite-prebuilts.css?v=1" />
+    <link rel="stylesheet" href="./src/homepage-sidebar.css?v=1" />
     <link rel="stylesheet" href="./src/saved-builds.css?v=2" />
     <link rel="stylesheet" href="./src/terms.css" />
     <link rel="stylesheet" href="./src/modal-fix.css" />
@@ -38,9 +39,9 @@
       {"@context":"https://schema.org","@type":"WebSite","name":"BuildWise","url":"https://buildwise7.github.io/buildwise/","description":"BuildWise helps people find a considered PC build based on their needs, budget and style."}
     </script>
   </head>
-  <body>
+  <body class="homepage-shell">
     <div class="grain"></div>
-    <header class="site-header"><a class="brand" href="#top"><span class="brand-mark">B</span><span>buildwise</span></a><nav><a class="prebuilts-link" href="./prebuilts.html">Pre-builts</a></nav><button class="header-cta" data-start>Find my build <span>↗</span></button></header>
+    <aside class="homepage-sidebar" aria-label="BuildWise navigation"><button class="sidebar-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button><a class="sidebar-brand" href="#top"><span class="brand-mark">B</span><span>buildwise</span></a><nav class="sidebar-links"><a href="./saved-builds.html" aria-label="Saved builds" title="Saved builds"><b aria-hidden="true">⌑</b><span>Saved builds</span></a><a href="./prebuilts.html" aria-label="Pre-builts" title="Pre-builts"><b aria-hidden="true">◫</b><span>Pre-builts</span></a><a href="#build-guide" aria-label="YouTube videos" title="YouTube videos"><b aria-hidden="true">▷</b><span>YouTube videos</span></a></nav></aside><header class="site-header"><a class="brand" href="#top"><span class="brand-mark">B</span><span>buildwise</span></a><button class="header-cta" data-start>Find my build <span>↗</span></button></header>
     <main id="top">
       <section class="hero"><div class="hero-copy"><p class="eyebrow">THE INTENTIONAL PC PLATFORM</p><h1>Build the PC<br /><em>that gets you.</em></h1><p class="hero-text">Tell us how you play, create and work. We’ll turn your priorities into a considered PC — not a spreadsheet of parts.</p><div class="hero-actions"><button class="primary-button" data-start>Build my PC <span>→</span></button><button class="secondary-button" data-open-builder>Or choose every part</button><a class="secondary-button saved-builds-link" href="./saved-builds.html">Saved builds</a></div><div class="trust-row"><span>◌ No jargon overload</span><span>◌ Built around you</span><span>◌ Compatibility minded</span></div></div><div class="hero-sculpture" aria-label="Abstract illustration of a computer build"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="case-visual"><div class="case-top"></div><div class="case-glass"><div class="fan fan-a"></div><div class="fan fan-b"></div><div class="gpu-line"></div><div class="board"></div></div><div class="case-side"></div></div><p class="sculpture-label">YOUR SPEC, <i>IN FOCUS</i></p></div></section>
       <section class="intent-strip"><p>Not another part catalogue.</p><div><span>YOUR INTENT</span><b>→</b><span>A BETTER FIT</span></div><p>Start with what matters.</p></section>
@@ -60,5 +61,6 @@
     <script type="module" src="./src/terms.js"></script>
     <script type="module" src="./src/home-saved-preview.js?v=1"></script>
     <script type="module" src="./src/home-elite-prebuilts.js?v=1"></script>
+    <script type="module" src="./src/homepage-sidebar.js?v=1"></script>
   </body>
 </html>
