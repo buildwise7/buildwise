@@ -1,0 +1,3 @@
+import {buildGuides} from './data/build-guides.js';
+const root=document.querySelector('#youtube-video-grid');
+if(root)root.innerHTML=buildGuides.map(({videoId,title,channel})=>`<article class="youtube-card"><div class="youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=0" title="${title} by ${channel}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><p>${channel}</p><h2>${title}</h2><a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>`).join('');
