@@ -8,3 +8,7 @@
 
 /* Collapsed rail: hidden labels must not participate in flex centring. */
 .homepage-shell:not(.sidebar-open) .sidebar-links span{display:none}
+
+/* Full-width homepage sections beside the sidebar; padding remains the inner content container. */
+.homepage-shell .elite-prebuilts,.homepage-shell .build-preview{max-width:none;width:100%;padding-left:max(28px,calc((100% - 1280px)/2));padding-right:max(28px,calc((100% - 1280px)/2))}
+@media(max-width:700px){.homepage-shell .elite-prebuilts,.homepage-shell .build-preview{padding-left:20px;padding-right:20px}}
