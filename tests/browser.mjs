@@ -110,7 +110,8 @@ await test('generated builds save, reopen, delete and persist across refresh', a
 
 await test('manual builder saves a named build', async () => {
   const { context, page } = await pageFor();
-  await page.getByRole('button', { name:'Manual builder', exact:true }).click();
+  await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+  await page.locator('.build-item').first().waitFor({state:'visible'});
   await page.locator('#build-name').fill('Quiet desk build');
   await page.getByRole('button', { name:'Save build', exact:true }).click();
   assert.match(await page.locator('.save-status').innerText(), /Quiet desk build/);
@@ -119,7 +120,8 @@ await test('manual builder saves a named build', async () => {
 
 await test('share links restore valid builds and safely reject invalid or missing parts', async () => {
   const { context, page } = await pageFor();
-  await page.getByRole('button', { name:'Manual builder', exact:true }).click();
+  await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+  await page.locator('.build-item').first().waitFor({state:'visible'});
   await page.getByRole('button', { name:'Share build', exact:true }).click();
   const url = await page.getByLabel('Share build link').inputValue();
   assert.ok(url?.includes('build='));
@@ -160,6 +162,22 @@ await test('pre-built page loads its safe catalogue framework and matcher flow',
   await page.getByRole('button', { name:'Back', exact:true }).click();
   await page.getByRole('button', { name:'Close pre-built questionnaire' }).click();
   assert.equal(await page.locator('#prebuilt-modal').getAttribute('aria-hidden'), 'true');
+  await context.close();
+});
+
+await test('Choose Every Part is a direct page with the shared editable builder and sidebar link', async () => {
+  const { context, page } = await pageFor();
+  await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+  await page.locator('.build-item').first().waitFor({state:'visible'});
+  assert.equal(await page.getByRole('heading', { name:'Build It How You Want It', exact:true }).count(), 1);
+  assert.equal(await page.locator('.build-item').count(), 9);
+  const current = page.getByRole('link', { name:'Choose Every Part', exact:true });
+  assert.equal(await current.getAttribute('aria-current'), 'page');
+  assert.equal(await page.getByRole('link', { name:'Main page', exact:true }).getAttribute('href'), './index.html');
+  await page.getByRole('button', { name:'Replace', exact:true }).first().click();
+  assert.ok(await page.locator('.product-card').count() > 0);
+  await page.getByRole('button', { name:'Add to build', exact:true }).first().click();
+  assert.equal(await page.locator('.build-item').count(), 9);
   await context.close();
 });
 
@@ -218,7 +236,8 @@ await test('pre-built matches use compact cards and an informational component v
 
 await test('saved builds page unifies editable custom and view-only pre-built saves', async () => {
   const { context, page } = await pageFor();
-  await page.getByRole('button', { name:'Manual builder', exact:true }).click();
+  await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+  await page.locator('.build-item').first().waitFor({state:'visible'});
   await page.getByRole('button', { name:'Save build', exact:true }).click();
   await page.goto('http://127.0.0.1:4173/saved-builds.html', { waitUntil:'networkidle' });
   assert.equal(await page.locator('.saved-card-custom').count(), 1);
@@ -259,7 +278,8 @@ await test('compact pre-built matches remain usable on mobile', async () => {
 await test('saved and share controls fit on desktop and mobile', async () => {
   for (const viewport of [{width:1440,height:900},{width:375,height:812}]) {
     const { context, page } = await pageFor(viewport);
-    await page.getByRole('button', { name:viewport.width <= 700 ? 'Or choose every part' : 'Manual builder', exact:true }).click();
+    await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+    await page.locator('.build-item').first().waitFor({state:'visible'});
     const box = await page.getByRole('button', { name:'Share build', exact:true }).boundingBox();
     assert.ok(box && box.x >= 0 && box.x + box.width <= viewport.width);
     await context.close();
@@ -287,7 +307,8 @@ await test('questionnaire opens, navigates, returns, completes and closes cleanl
 
 await test('manual builder replaces a component and remains usable', async () => {
   const { context, page } = await pageFor();
-  await page.getByRole('button', { name: 'Manual builder', exact: true }).click();
+  await page.goto('http://127.0.0.1:4173/manual-builder.html', { waitUntil:'networkidle' });
+  await page.locator('.build-item').first().waitFor({state:'visible'});
   assert.equal(await page.locator('.build-item').count(), 9);
   const original = await page.locator('.build-item .part-link').first().innerText();
   await page.getByRole('button', { name: 'Replace', exact: true }).first().click();
